@@ -9,12 +9,16 @@ const controls = [
 	{ label: 'Meat',  type: 'meat'}
 ];
 
-const buildControls = () => {
+const buildControls = ({ingredientAdded}) => {
 	return (
 		<div className = {classes.BuildControls}>
 			{
-				controls.map((control) => {
-					return <BuildControl key={control.label} label={control.label} />
+				controls.map((ctrl) => {
+					return <BuildControl 
+						key={ctrl.label} 
+						label={ctrl.label} 
+						added={() => ingredientAdded(ctrl.type)}
+						/>
 				})
 			}
 		</div>		
