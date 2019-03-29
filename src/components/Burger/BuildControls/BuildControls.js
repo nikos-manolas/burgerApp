@@ -9,7 +9,7 @@ const controls = [
 	{ label: 'Meat',  type: 'meat'}
 ];
 
-const buildControls = ({ingredientAdded}) => {
+const buildControls = ({ingredientAdded, ingredientRemoved, disabledInfo}) => {
 	return (
 		<div className = {classes.BuildControls}>
 			{
@@ -18,6 +18,8 @@ const buildControls = ({ingredientAdded}) => {
 						key={ctrl.label} 
 						label={ctrl.label} 
 						added={() => ingredientAdded(ctrl.type)}
+						removed={() => ingredientRemoved(ctrl.type)}
+						disabled={disabledInfo[ctrl.type]}
 						/>
 				})
 			}
