@@ -104,32 +104,41 @@ class BurgerBuilder extends Component {
 	}
 
 	purchaseContinueHandler = () => {
-		this.setState({loading: true});
+		// this.setState({loading: true});
 
-		const order = {
-			ingredients: this.state.ingredients,
-			price: this.state.totalPrice,
-			customer: {
-				name: 'Nik asdf',
-				address: {
-					street: 'asdf',
-					zipCode: '4141',
-					country: 'Gerc'
-				},
-				email: 'test@test.com',
-			},
-			deliveryMethod: 'fastest'
-		};
+		// const order = {
+		// 	ingredients: this.state.ingredients,
+		// 	price: this.state.totalPrice,
+		// 	customer: {
+		// 		name: 'Nik asdf',
+		// 		address: {
+		// 			street: 'asdf',
+		// 			zipCode: '4141',
+		// 			country: 'Gerc'
+		// 		},
+		// 		email: 'test@test.com',
+		// 	},
+		// 	deliveryMethod: 'fastest'
+		// };
 
-		this.postData('https://react-my-burger-b09a6.firebaseio.com/orders.json', order)
-		.then(data => {
-			console.log(data);
-			this.setState({loading: false, purchasing: false});
-		})
-		.catch(err => {
-			console.log(err);
-			this.setState({loading: false, purchasing: false });
-		})
+		// this.postData('https://react-my-burger-b09a6.firebaseio.com/orders.json', order)
+		// .then(data => {
+		// 	console.log(data);
+		// 	this.setState({loading: false, purchasing: false});
+		// })
+		// .catch(err => {
+		// 	console.log(err);
+		// 	this.setState({loading: false, purchasing: false });
+		// })
+		const queryParams = [];
+		for (let i in this.state.ingredients) {
+			queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
+		}
+		const queryString = queryParams.join('&');
+		this.props.history.push({
+			pathname: '/checkout',
+			search: '?' + queryString
+		});
 	}
 
 	render () {
