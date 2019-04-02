@@ -4,6 +4,7 @@ import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import classes from './ContactData.module.css';
+import * as orderActions from '../../../store/actions/index';
 
 class ContactData extends Component {
 	state = {
@@ -88,13 +89,11 @@ class ContactData extends Component {
 				valid: false
 			}
 		},
-		formIsValid: false,
-		loading: false
+		formIsValid: false
 	}
 
 	orderHandler = (event) => {
 		event.preventDefault();
-		this.setState({loading: true});
 
 		const formData = {};
 		for (let formElementIdentifier in this.state.orderForm) {
@@ -105,29 +104,7 @@ class ContactData extends Component {
 			price: this.props.price,
 			orderData: formData
 		};
-
-		this.postData('https://react-my-burger-b09a6.firebaseio.com/orders.json', order)
-		.then(data => {
-			console.log(data);
-			this.setState({loading: false});
-			this.props.history.push('/');
-		})
-		.catch(err => {
-			console.log(err);
-			this.setState({loading: false});
-		})
-	}
-
-
-	postData = (url='', data={}) => {
-		return fetch(url, {
-			method: "POST",
-			header: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(data)
-		})
-		.then(resp => resp.json())
+		this.props.onOrderBurger(order);
 	}
 
 	checkValidity = (value, rules) => {
@@ -193,7 +170,7 @@ class ContactData extends Component {
 				})}
 				<Button btnType="Success" disabled={!this.state.formIsValid}>ORDER</Button>
 			</form>);
-		if (this.state.loading) {
+		if (this.props.loading) {
 			form = <Spinner />;
 		} 
 		return (
@@ -207,9 +184,16 @@ class ContactData extends Component {
 
 const mapStateToProps = state => {
 	return {
-		ings: state.ingredients,
-		price: state.totalPrice
+		ings: state.burgerBuilder.ingredients,
+		price: state.burgerBuilder.totalPrice,
+		loading: state.order.loading
 	}
 }
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch => {
+	return {
+		onOrderBurger: (orderData) => dispatch(orderActions.purchaseBurger(orderData))
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

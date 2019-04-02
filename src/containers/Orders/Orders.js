@@ -1,46 +1,45 @@
 import React, { Component } from 'react';
-
+import { connect } from 'react-redux';
 import Order from '../../components/Order/Order';
+import * as actions from '../../store/actions/index';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class Orders extends Component {
-	state = {
-		orders: [],
-		loading: true
-	};
-
 	componentDidMount() {
-		fetch('https://react-my-burger-b09a6.firebaseio.com/orders.json')
-			.then(resp => resp.json())
-			.then(data => {
-				const fetchedOrders = [];
-				for (let key in data) {
-					fetchedOrders.push({
-						...data[key],
-						id: key
-					});
-				}
-				this.setState({loading: false, orders: fetchedOrders});
-			})
-			.catch(error => {
-				console.log(error);
-				this.setState({loading: false});
-			})
+		this.props.onFetchOrders();
 	}
 
 	render () {
-		return (
-			<div>
-				{this.state.orders.map(order => {
+		let orders = <Spinner />;
+		if (!this.props.loading) {
+			orders = this.props.orders.map(order => {
 					return (
 						<Order 
 							key={order.id}
 							ingredients={order.ingredients}
 							price={order.price}/>
 					)
-				})}
+				});
+		}
+		return (
+			<div>
+				{orders}
 			</div>
 		);
 	}
 }
 
-export default Orders;
+const mapStateToProps = state => {
+	return {
+		orders: state.order.orders,
+		loading: state.order.loading
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		onFetchOrders: () => dispatch(actions.fetchOrders())
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);
