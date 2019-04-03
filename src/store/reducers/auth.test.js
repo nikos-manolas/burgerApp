@@ -1,7 +1,7 @@
 import reducer from './auth';
 import * as actionTypes from '../actions/actionTypes';
 
-desribe('auth reducer', () => {
+describe('auth reducer', () => {
 	const initialState = {
 		token: null,
 		userId: null,
