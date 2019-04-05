@@ -21,29 +21,12 @@ export const purchaseBurgerStart = () => {
 	}
 }
 
-const postData = (url='', data={}) => {
-	return fetch(url, {
-		method: "POST",
-		header: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(data)
-	})
-	.then(resp => resp.json())
-}
-
 export const purchaseBurger = (orderData, token) => {
-	return dispatch => {
-		dispatch(purchaseBurgerStart());
-		postData('https://react-my-burger-b09a6.firebaseio.com/orders.json?auth=' + token, orderData)
-		.then(data => {
-			dispatch(purchaseBurgerSuccess(data.name, orderData));
-		})
-		.catch(error => {
-			dispatch(purchaseBurgerFail(error));
-		})
-		
-	};
+	return {
+		type: actionTypes.PURCHASE_BURGER,
+		orderData,
+		token
+	}
 };
 
 export const purchaseInit = () => {
@@ -73,28 +56,10 @@ export const fetchOrdersStart = () => {
 };
 
 export const fetchOrders = (token, userId) => {
-	return dispatch => {
-		dispatch(fetchOrdersStart());
-		const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
-		fetch('https://react-my-burger-b09a6.firebaseio.com/orders.json' + queryParams)
-			.then(resp => resp.json())
-			.then(data => {
-				if (data.error) {
-					dispatch(fetchOrdersFail(data.error));
-				} else {
-					const fetchedOrders = [];
-					for (let key in data) {
-						fetchedOrders.push({
-							...data[key],
-							id: key
-						});
-					}
-					dispatch(fetchOrdersSuccess(fetchedOrders));					
-				}
-			})
-			.catch(error => {
-				dispatch(fetchOrdersFail(error));
-			})
+	return {
+		type: actionTypes.FETCH_ORDERS,
+		token,
+		userId
 	}
 }
 

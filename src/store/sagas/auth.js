@@ -27,34 +27,38 @@ export function* authUserSaga(action) {
 	}
 
 	try {
-		const postData = (url='', data={}) => {
-			return yield fetch(url, {
-				method: "POST",
-				header: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(data)
-			})
-			.then(resp => resp.json())
-		};
 		const resp1 = yield fetch(url, {
 				method: "POST",
 				header: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify(data)
+				body: JSON.stringify(authData)
 			});
-		const jsonData = yield resp1.json();
-		const response = yield jsonData;
-		const expirationDate = new Date(new Date().getTime() + data.expiresIn*1000);
-		yield localStorage.setItem('token', response.data.idToken);
+		const response = yield resp1.json();
+		const expirationDate = new Date(new Date().getTime() + response.expiresIn*1000);
+		yield localStorage.setItem('token', response.idToken);
 		yield localStorage.setItem('expirationDate', expirationDate);
-		yield localStorage.setItem('userId', response.data.localId);
-		yield put(actions.authSuccess(response.data.idToken, response.data.localId));
-		yield put(actions.checkAuthTimeout(response.data.expiresIn));		
+		yield localStorage.setItem('userId', response.localId);
+		yield put(actions.authSuccess(response.idToken, response.localId));
+		yield put(actions.checkAuthTimeout(response.expiresIn));		
 	} 
-	catch(error ) {
-		yield put(actions.authFail(error, response.data.error));
+	catch(error) {
+		yield put(actions.authFail(error));
 	}
-	
+}
+
+export function* authCheckStateSaga(action) {
+	const token = yield localStorage.getItem('token');
+	if (!token) {
+		yield put(actions.logout());
+	} else {
+		const expirationDate = yield new Date(localStorage.getItem('expirationDate'));
+		if (expirationDate <= new Date()) {
+			yield put(actions.logout());
+		} else {
+			const userId = yield localStorage.getItem('userId');
+			yield put(actions.authSuccess(token, userId));
+			yield put(actions.checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
+		}	
+	}
 }

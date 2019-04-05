@@ -27,20 +27,9 @@ export const fetchIngredientsFailed = () => {
 	}
 };
 
-const getData = (url='') => {
-	return fetch(url)
-	.then(response => response.json());
-}
-
 export const initIngredients = () => {
-	return dispatch => {
-		getData('https://react-my-burger-b09a6.firebaseio.com/ingredients.json')
-		.then(data => {
-			dispatch(setIngredients(data))
-		})
-		.catch(error => {
-			dispatch(fetchIngredientsFailed())
-		});
+	return {
+		type: actionTypes.INIT_INGREDIENTS
 	}
 }
 
