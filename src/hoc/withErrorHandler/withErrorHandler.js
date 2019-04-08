@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
+import React, { Fragment } from 'react';
 import Modal from '../../components/UI/Modal/Modal';
-import Aux from '../Auxiliary/Auxiliary';
+// import useHttpErrorHandler from '../../hooks/http-error-handler';
 
 const withErrorHandler = (WrappedComponent) => {
-	return class extends Component {
-		render () {
-			return (
-				<Aux>
-					<Modal>
-						Something didn't work!
-					</Modal>
-					<WrappedComponent {...this.props} />
-				</Aux>
-			);
-		}
+	return props => {
+		// const [error, clearError] = useHttpErrorHandler();
+		
+		return (
+			<Fragment>
+				<Modal>
+					Something didn't work!
+				</Modal>
+				<WrappedComponent {...props} />
+			</Fragment>
+		);
 	}
 }
 
